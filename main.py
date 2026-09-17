@@ -1,18 +1,17 @@
-import os
+import asyncio
 
-import httpx
-from dotenv import load_dotenv
-from openai import OpenAI
+from app.bot import create_client, register_handlers
+from app.config import settings
+from app.db import init_db
 
-load_dotenv()
 
-http_client = httpx.Client(proxy='socks5://127.0.0.1:10808') if bool(os.getenv('USE_PROXY')) else None
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'), http_client=http_client)
+async def main() -> None:
+    await init_db()
+    client = create_client()
+    register_handlers(client)
+    await client.start(phone=settings.phone)
+    await client.run_until_disconnected()
 
-response = client.responses.create(
-    model='gpt-5-mini',
-    instructions='You are a friendly and charismatic person. Keep your replies short and natural.',
-    input='سلام، امروز حالت چطوره؟',
-)
 
-print(response.output_text)
+if __name__ == '__main__':
+    asyncio.run(main())
