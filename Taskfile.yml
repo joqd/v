@@ -1,0 +1,33 @@
+version: "3"
+
+tasks:
+  run:
+    desc: Run the project
+    deps:
+      - run-bot
+    silent: true
+
+  run-bot:
+    internal: true
+    cmds:
+      - uv run python main.py
+    silent: true
+
+  format:
+    desc: Format using ruff
+    cmds:
+      - uv run ruff format .
+    silent: true
+
+  fix:
+    desc: Fix lint issues using ruff
+    cmds:
+      - uv run ruff check . --fix
+      - uv run ruff format .
+    silent: true
+
+  lint:
+    desc: Lint using ruff
+    cmds:
+      - uv run ruff check .
+    silent: true
